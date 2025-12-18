@@ -1,3 +1,18 @@
+# NEXT STEPS
+## configure/test SSH into the instance
+* ensure any vpn or security settings are part of my main.tf
+* ssh into my instance
+* document process
+
+## deploy nginx server into the instance
+* include a Dockerfile for basic nginx container image
+* configure main.tf to run installs etc... upong deployment
+* test
+  * bonus points: include a healthcheck in main.tf if possible
+  * otherwise, use public IP to get the ngxin welcome page
+
+
+# DONE 
 
 ## 1. AWS account prep (console)
 
@@ -38,6 +53,7 @@
 
 * Create a **new empty directory**
 * Write up terraform config files
+  * see `main.tf`for a basic starting point.
 
 ---
 
@@ -57,8 +73,6 @@
   * Attaches key pair
 * Verify:
   * Instance visible in EC2 console
-  * SSH works (optional for hello-world)
-
 ---
 
 ## 6. Cleanup (important habit)
