@@ -9,6 +9,8 @@
 
   * Either:
     * Create in AWS (EC2 → Key pairs), **download `.pem`**
+      * Copy the key's ID, Secret into ~/.aws/credientials [default]
+      * Assuming a one-man show scenario where I don't want to deal with envars/profils etc... and just have one IAM user for my own "academic" terraform
     * Or generate locally and upload public key
 * **Default VPC is fine** for hello-world (no custom networking yet)
 
@@ -18,9 +20,8 @@
 
 **AWS CLI credentials (most common)**
 
-* Install `awscli`
-* Run:
-
+* Install `awscli` (already done)
+* ~~Run ~~(already done)
   ```bash
   aws configure
   ```
