@@ -20,8 +20,8 @@
 
 **AWS CLI credentials (most common)**
 
-* Install `awscli` (already done)
-* ~~Run ~~(already done)
+* ~~Install `awscli`~~ (already done)
+* ~~Run~~(already done)
   ```bash
   aws configure
   ```
@@ -29,6 +29,8 @@
   * `~/.aws/credentials`
   * `~/.aws/config`
 * Terraform auto-picks this up
+
+`config` allows you to define default regions etc... that terraform will use unless specified otherwise.
 
 ---
 
