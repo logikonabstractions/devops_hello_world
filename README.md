@@ -79,3 +79,63 @@
 
 * `terraform destroy`
 
+## 7. Setup instance for SSH
+1. Add an EC2 key-pair on the instance
+2. Add security-group that allows SSH
+3. (cmdline) ssh with correct user (os-dependant) & mykey.pem
+
+### Detailed steps
+
+#### EC2 key-pair
+
+This must be created first if it has not. A simple way for dev & testing is to create one locally, register it locally under ~/.ssh/mykeyname. Then in main.tf, point to the .pub part of it so it can provide it to the instance.  Then when ssh-ing, provide the .pem part.
+
+Steps overview:
+
+  1 `ssh-keygen -t ed25519 -f ~/.ssh/terraform_ec2 -N "" `
+
+  2 create the key-pair & name:
+
+    ``` 
+    resource "aws_key_pair" "terraform" {
+      key_name   = "terraform-ec2"
+      public_key = file("~/.ssh/terraform_ec2.pub")
+    }
+    ```
+
+  3 Add this resource to the instance definition
+
+    ```
+    resource "aws_instance" "helloworld" {
+      ...
+      key_name      = aws_key_pair.terraform.key_name
+      ...
+    }
+
+    ```
+
+  4 `ssh -i ~/.ssh/terraform_ec2 ec2-user@<public-ip>`
+
+The user will depend on OS (not always ec2-user).
+
+#### Adding Variables
+* create a variables.tf files (could be anything). You can then define default values
+* inside it, define variables such as:
+
+    ``` 
+    variable "var_name" {
+      type   = "string" | number | bool | list<type> | map<type> | set<type> | object {attr: <type>} 
+      description = "what is this thing"
+      default = "default value"
+    }
+    ```
+
+* you can also define a terraform.tfvars file
+* that file takes the variable defines elsewhere in a .tf file
+* BUT it allows you to assign values to it and override any default.
+
+# LEARNED & BEST PRACTICES
+
+* Seperate stuff -- vars into vars.tf, outputs into outputs.tf etc.
+* define defaults in vars.tf, but then override with terraform.tfvars
+* create environment specific .tfvars (dev, prod, test, etc.) * provide then to terraform apply -var-file
