@@ -1,8 +1,26 @@
+
+# QUICK LAUNCH
+## Terraform stuff
+* `terraform init`
+* `terraform apply`
+* `ssh -i ~/.ssh/terraform_ec2 <USERNAME>@<PUBLIC-IP>`
+  * USERNAME: ubuntu, ec2-user, etc.
+
+## Flask app
+To setup & run it locally:
+* `python -m venv .venv`
+* `source .venv/bin/activate`
+* `pip install flask && pip freeze > requirements.txt`
+* `python app.py`
+
+## Run on Docker
+A basic setup using `Dockerfile`:
+* `docker run --rm -p 8000:8000 flask-hello`
+
 # NEXT STEPS
-## configure/test SSH into the instance
-* ensure any vpn or security settings are part of my main.tf
-* ssh into my instance
-* document process
+## configure/test Flask app 
+* runs on :8000
+* serves
 
 ## deploy nginx server into the instance
 * include a Dockerfile for basic nginx container image
@@ -114,7 +132,10 @@ Steps overview:
 
     ```
 
-  4 `ssh -i ~/.ssh/terraform_ec2 ec2-user@<public-ip>`
+  4 `ssh -i ~/.ssh/terraform_ec2 <USERNAME>@<PUBLIC-IP>`
+
+#### Troubleshooting
+* Permission denied - public key
 
 The user will depend on OS (not always ec2-user).
 

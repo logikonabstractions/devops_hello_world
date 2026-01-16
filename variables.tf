@@ -10,3 +10,8 @@ variable "ec2_instance_type" {
   default = "t2.micro"
 }
 
+
+variable "ssh_alternate_port" {
+  type    = number
+  default = 333
+}

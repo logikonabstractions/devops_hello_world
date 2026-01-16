@@ -6,10 +6,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir flask==3.0.3
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py .
-
+COPY app ./app
 EXPOSE 8000
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app.main:app"]
 
-CMD ["python", "app.py"]
+# CMD ["python", "app.py"]

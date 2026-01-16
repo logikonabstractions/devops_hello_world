@@ -22,22 +22,41 @@ resource "aws_instance" "hello" {
   ami           = "ami-0ecb62995f68bb549"
   instance_type = var.ec2_instance_type
   key_name      = aws_key_pair.terraform.key_name
-  vpc_security_group_ids = [aws_security_group.ssh.id]
+  vpc_security_group_ids = [aws_security_group.web.id]
 
   tags = { Name = var.instance_name }
 }
 
 
 # define security group that opens ssh on the instance. Above in instance definition, also attach that security group to the instance
-resource "aws_security_group" "ssh" {
+resource "aws_security_group" "web" {
   name = "tf-ssh"
   description = "Allow SSH"
   ingress {
-    from_port   = 22
-    to_port     = 22
+    description = "Alternate ssh port"
+    from_port   = var.ssh_alternate_port
+    to_port     = var.ssh_alternate_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]   # whitelist, ok for dev/testing
   }
+
+  ingress {
+    description = "Default ssh port"
+    from_port   = 22
+    to_port     = 22  
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]   # whitelist, ok for dev/testing
+  }
+
+
+  ingress {
+    description = "Flask"
+    from_port   = 8000
+    to_port     = 8000  
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]   # whitelist, ok for dev/testing
+  }
+
 
   egress {
     from_port   = 0
