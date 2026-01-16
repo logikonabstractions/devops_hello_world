@@ -18,9 +18,55 @@ A basic setup using `Dockerfile`:
 * `docker run --rm -p 8000:8000 flask-hello`
 
 # NEXT STEPS
-## configure/test Flask app 
-* runs on :8000
-* serves
+## configure/test Flask app (ONGOING)
+* I have hte infrastructure (ec2, ECR, runs on docker etc.)
+* It creates it on AWS
+
+The deployemnet part is left to do manually.
+* `terraform apply`  to create the infras
+* then:
+
+### Build, push, tag image to ECR:
+AWS_REGION=us-east-1
+REPO=flask-hello
+**account + repo URI**
+ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
+ECR="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO}"
+
+**pick an immutable tag (recommended); fallback to timestamp**
+TAG="$(git rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M%S)"
+
+**login to ECR**
+aws ecr get-login-password --region "$AWS_REGION" \
+  | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+**build + push**
+docker build -t "${REPO}:${TAG}" .
+docker tag "${REPO}:${TAG}" "${ECR}:${TAG}"
+docker push "${ECR}:${TAG}"
+
+**(optional) also maintain a moving tag like latest**
+docker tag "${REPO}:${TAG}" "${ECR}:latest"
+docker push "${ECR}:latest"
+
+Sanity check, should output an image SHA & in a table:
+
+`aws ecr describe-images --region us-east-1 --repository-name flask-hello \
+  --query 'imageDetails[].{tags:imageTags,digest:imageDigest,pushed:imagePushedAt}' --output table`
+
+### pull it from within the instance (SSH)
+* `ssh -i ~/.ssh/terraform_ec2 ubuntu@"$EC2_IP"`
+
+Then:
+
+**Pull + run**
+```
+  sudo docker pull "${ECR}:${TAG}"
+  sudo docker rm -f flask-hello || true
+  sudo docker run -d --name flask-hello --restart unless-stopped -p 8000:8000 "${ECR}:${TAG}"
+```
+
+Then visible public_ip:8000 to get the welcome. 
 
 ## deploy nginx server into the instance
 * include a Dockerfile for basic nginx container image
